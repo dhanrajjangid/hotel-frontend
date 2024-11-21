@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   List,
   ListItem,
@@ -7,32 +7,31 @@ import {
   Divider,
   ListItemIcon,
   IconButton,
+  Typography,
+  Box,
 } from "@mui/material";
-import { Link } from "react-router-dom";
-import { FaHome, FaPlus, FaEdit, FaListAlt } from "react-icons/fa"; // Import icons from react-icons
-import { IoMenu } from "react-icons/io5"; // Import Menu icon for the hamburger menu
+import { Link, useLocation } from "react-router-dom";
+import { FaSearch, FaPlus, FaEdit, FaListAlt } from "react-icons/fa"; // Import icons from react-icons
+import { IoClose } from "react-icons/io5"; // Import Close icon for the X button
 
-const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false); // State to manage the drawer open/close
+const Sidebar = ({ isOpen, toggleSidebar }) => {
+  const location = useLocation();
 
-  // Toggle the sidebar
-  const toggleDrawer = () => {
-    setIsOpen(!isOpen);
-  };
+  const isActive = (path) => location.pathname === path;
+
+  const routes = [
+    {
+      path: "/",
+      name: "Hotel Search",
+      icon: <FaListAlt size={20} />,
+    },
+    { path: "/hotels", name: "All Hotels", icon: <FaSearch size={20} /> },
+    { path: "/add-hotel", name: "Add Hotel", icon: <FaPlus size={20} /> },
+    { path: "/edit-hotel", name: "Edit Hotel", icon: <FaEdit size={20} /> },
+  ];
 
   return (
     <>
-      {/* Hamburger Menu Button for mobile view */}
-      <IconButton
-        edge="start"
-        color="inherit"
-        aria-label="menu"
-        onClick={toggleDrawer}
-        sx={{ position: "absolute", top: 20, left: 20 }}
-      >
-        <IoMenu size={30} />
-      </IconButton>
-
       {/* Drawer (Sidebar) */}
       <Drawer
         sx={{
@@ -46,48 +45,56 @@ const Sidebar = () => {
         variant="temporary" // Make the drawer temporary on mobile
         anchor="left"
         open={isOpen}
-        onClose={toggleDrawer}
+        onClose={toggleSidebar}
         ModalProps={{
           keepMounted: true, // Better performance on mobile
         }}
       >
         <div>
-          <h3 style={{ textAlign: "center", padding: "20px" }}>
-            Hotel Manager
-          </h3>
+          {/* Close Button (X) */}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            padding={2}
+            boxSizing="border-box"
+          >
+            <Typography variant="h5">Hotel Finder</Typography>
+            <IconButton
+              onClick={toggleSidebar}
+              sx={{
+                zIndex: 1300, // Ensure the button stays on top
+              }}
+            >
+              <IoClose size={30} />
+            </IconButton>
+          </Box>
           <Divider />
           <List>
-            <ListItem button component={Link} to="/hotels">
-              <ListItemIcon>
-                <FaListAlt size={20} />
-              </ListItemIcon>
-              <ListItemText primary="All Hotels" />
-            </ListItem>
-            <ListItem button component={Link} to="/add-hotel">
-              <ListItemIcon>
-                <FaPlus size={20} />
-              </ListItemIcon>
-              <ListItemText primary="Add Hotel" />
-            </ListItem>
-            <ListItem button component={Link} to="/edit-hotel">
-              <ListItemIcon>
-                <FaEdit size={20} />
-              </ListItemIcon>
-              <ListItemText primary="Edit Hotel" />
-            </ListItem>
+            {routes?.map((route) => (
+              <ListItem
+                button
+                key={route.path}
+                component={Link}
+                to={route.path}
+                sx={{
+                  backgroundColor: isActive(route.path)
+                    ? "#f0f0f0"
+                    : "transparent", // Highlight when active
+                  "&:hover": {
+                    backgroundColor: isActive(route.path)
+                      ? "#e0e0e0"
+                      : "#f0f0f0", // Hover effect
+                  },
+                }}
+              >
+                <ListItemIcon>{route.icon}</ListItemIcon>
+                <ListItemText primary={route.name} />
+              </ListItem>
+            ))}
           </List>
         </div>
       </Drawer>
-
-      {/* Content section to push the content when sidebar is open */}
-      <div
-        style={{
-          marginLeft: isOpen ? 240 : 0,
-          transition: "margin-left 0.3s ease",
-        }}
-      >
-        {/* You can place the main content here */}
-      </div>
     </>
   );
 };

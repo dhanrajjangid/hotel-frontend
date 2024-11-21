@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { TextField, Button, Grid, Box, Checkbox, FormControlLabel } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { BACKEND_URL } from '../const';
 
 const AddHotel = () => {
   const [hotelData, setHotelData] = useState({
@@ -57,7 +58,7 @@ const AddHotel = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await axios
-      .post('http://localhost:8000/hotels', hotelData)
+      .post(`${BACKEND_URL}/hotels`, hotelData)
       .then((response) => {
         navigate('/hotels');
       })

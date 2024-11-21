@@ -12,13 +12,16 @@ import {
 import axios from "axios";
 import { BACKEND_URL } from "../const";
 
-const HotelList = () => {
+const HotelSearch = () => {
   const [hotels, setHotels] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const fetchHotels = (query = "") => {
+  const fetchHotels = (query) => {
+    const data = {
+        prompt: query
+    }
     axios
-      .get(`${BACKEND_URL}/hotels`)
+      .post(`${BACKEND_URL}/hotels/search`, data)
       .then((response) => {
         setHotels(response.data.data);
         console.log(response)
@@ -27,10 +30,6 @@ const HotelList = () => {
         console.error("There was an error fetching the hotels:", error);
       });
   };
-
-  useEffect(() => {
-    fetchHotels(); // Initial fetch without search query
-  }, []);
 
   const handleSearch = () => {
     fetchHotels(searchQuery); // Fetch hotels based on the search query
@@ -47,6 +46,9 @@ const HotelList = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           sx={{ width: "50%", marginRight: 2 }}
         />
+        <Button variant="contained" color="primary" onClick={handleSearch}>
+          Search
+        </Button>
       </Box>
       <Box display="flex" justifyContent="center" mb={10}>
         <Typography
@@ -102,4 +104,4 @@ const HotelList = () => {
   );
 };
 
-export default HotelList;
+export default HotelSearch;
