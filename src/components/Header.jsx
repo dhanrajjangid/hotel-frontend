@@ -21,7 +21,7 @@ const Header = ({ toggleSidebar }) => {
 
         {/* Header Title */}
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Hotel Finder
+          StayScape
         </Typography>
       </Toolbar>
     </AppBar>
