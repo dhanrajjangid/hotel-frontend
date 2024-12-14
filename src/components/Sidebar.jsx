@@ -59,7 +59,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             padding={2}
             boxSizing="border-box"
           >
-            <Typography variant="h5">Hotel Finder</Typography>
+            <Typography variant="h5">StayScape</Typography>
             <IconButton
               onClick={toggleSidebar}
               sx={{
