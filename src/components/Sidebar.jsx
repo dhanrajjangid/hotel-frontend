@@ -27,7 +27,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     },
     { path: "/hotels", name: "All Hotels", icon: <FaSearch size={20} /> },
     { path: "/add-hotel", name: "Add Hotel", icon: <FaPlus size={20} /> },
-    { path: "/edit-hotel", name: "Edit Hotel", icon: <FaEdit size={20} /> },
+    // { path: "/edit-hotel", name: "Edit Hotel", icon: <FaEdit size={20} /> },
   ];
 
   return (

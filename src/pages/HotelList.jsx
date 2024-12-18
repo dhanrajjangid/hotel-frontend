@@ -25,15 +25,17 @@ const amenitiesIcons = {
 };
 
 const HotelList = () => {
-  const [hotels, setHotels] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [hotels, setHotels] = useState([]); // Original hotel data
+  const [filteredHotels, setFilteredHotels] = useState([]); // Filtered hotel data
+  const [searchQuery, setSearchQuery] = useState(""); // Search query
   const navigate = useNavigate(); // Navigation hook
 
-  const fetchHotels = (query = "") => {
+  const fetchHotels = () => {
     axios
       .get(`${BACKEND_URL}/hotels`)
       .then((response) => {
         setHotels(response.data.data);
+        setFilteredHotels(response.data.data); // Initialize filtered hotels
       })
       .catch((error) => {
         console.error("There was an error fetching the hotels:", error);
@@ -44,8 +46,19 @@ const HotelList = () => {
     fetchHotels();
   }, []);
 
-  const handleSearch = () => {
-    fetchHotels(searchQuery);
+  // Handle search input change and filter hotels
+  const handleSearchChange = (e) => {
+    const query = e.target.value.toLowerCase();
+    // Filter hotels based on the search query
+    const filtered = hotels.filter((hotel) => {
+      return (
+        hotel.name.toLowerCase().includes(query) ||
+        hotel.city.toLowerCase().includes(query) ||
+        hotel.address.toLowerCase().includes(query)
+      );
+    });
+
+    setFilteredHotels(filtered);
   };
 
   return (
@@ -56,74 +69,79 @@ const HotelList = () => {
           label="Search for Hotels"
           variant="outlined"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            handleSearchChange(e); setSearchQuery(e.target.valuey);
+          }} // Update the filtered list on change
           sx={{ width: "50%", marginRight: 2 }}
         />
-        <Button variant="contained" onClick={handleSearch}>
-          Search
-        </Button>
       </Box>
       {/* Hotels List */}
       <Box display="flex" gap={2} flexWrap="wrap">
-        {hotels?.map((hotel) => (
-          <Card sx={{ minWidth: 300,maxWidth: 300, mb: 2 }} key={hotel._id}>
-            <CardMedia
-              sx={{ height: 140 }}
-              image={hotel.imageUrl || "https://picsum.photos/200/300"}
-              title="Hotel Image"
-            />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                {hotel.name}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: "text.secondary", marginBottom: 1 }}
-              >
-                {hotel.address}, {hotel.city}
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{ fontWeight: "bold", marginBottom: 2 }}
-              >
-                ₹{hotel.price} per night
-              </Typography>
-              <Rating
-                name="hotel-rating"
-                value={hotel.rating}
-                precision={0.1}
-                readOnly
+        {filteredHotels.length > 0 ? (
+          filteredHotels.map((hotel) => (
+            <Card sx={{ minWidth: 300, maxWidth: 300, mb: 2 }} key={hotel._id}>
+              <CardMedia
+                sx={{ height: 140 }}
+                image={hotel.imageUrl || "https://picsum.photos/200/300"}
+                title="Hotel Image"
               />
-              {/* Amenities */}
-              <Box display="flex" gap={1} flexWrap="wrap" sx={{ mt: 2 }}>
-                {hotel.amenities.map((amenity) => (
-                  <Box
-                    key={amenity}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 0.5,
-                      fontSize: "0.9rem",
-                      backgroundColor: "#f5f5f5",
-                      padding: "5px 10px",
-                      borderRadius: "12px",
-                    }}
-                  >
-                    {amenitiesIcons[amenity] || null}
-                  </Box>
-                ))}
-              </Box>
-              <Button
-                variant="outlined"
-                sx={{ mt: 2 }}
-                fullWidth
-                onClick={() => navigate(`/hotels/${hotel._id}`)}
-              >
-                View Details
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  {hotel.name}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "text.secondary", marginBottom: 1 }}
+                >
+                  {hotel.address}, {hotel.city}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold", marginBottom: 2 }}
+                >
+                  ₹{hotel.price} per night
+                </Typography>
+                <Rating
+                  name="hotel-rating"
+                  value={hotel.rating}
+                  precision={0.1}
+                  readOnly
+                />
+                {/* Amenities */}
+                <Box display="flex" gap={1} flexWrap="wrap" sx={{ mt: 2 }}>
+                  {hotel.amenities.map((amenity) => (
+                    <Box
+                      key={amenity}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 0.5,
+                        fontSize: "0.9rem",
+                        backgroundColor: "#f5f5f5",
+                        padding: "5px 10px",
+                        borderRadius: "12px",
+                      }}
+                    >
+                      {amenitiesIcons[amenity] || null}
+                    </Box>
+                  ))}
+                </Box>
+                <Button
+                  variant="outlined"
+                  sx={{ mt: 2 }}
+                  fullWidth
+                  onClick={() => navigate(`/hotels/${hotel._id}`)}
+                >
+                  View Details
+                </Button>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <Typography variant="h6" sx={{ textAlign: "center", width: "100%" }}>
+            No hotels found matching your search criteria.
+          </Typography>
+        )}
       </Box>
     </Box>
   );

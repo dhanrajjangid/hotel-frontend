@@ -14,16 +14,20 @@ import { BACKEND_URL } from "../const";
 
 const HotelSearch = () => {
   const [hotels, setHotels] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('')
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchHotels = (query) => {
     const data = {
-        prompt: query
+      prompt: query
     }
     axios
       .post(`${BACKEND_URL}/hotels/search`, data)
       .then((response) => {
         setHotels(response.data.data);
+        if(response.data.data?.length === 0){
+          setErrorMessage(response?.data?.message || '')
+        }
         console.log(response)
       })
       .catch((error) => {
@@ -43,7 +47,7 @@ const HotelSearch = () => {
           label="Search for Hotels"
           variant="outlined"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => { setSearchQuery(e.target.value); setErrorMessage('') }}
           sx={{ width: "50%", marginRight: 2 }}
         />
         <Button variant="contained" color="primary" onClick={handleSearch}>
@@ -67,6 +71,7 @@ const HotelSearch = () => {
       </Box>
       {/* Hotels List */}
       <Box display="flex" gap={2} flexWrap="wrap">
+        {errorMessage && <Typography color='error'>{errorMessage}</Typography>}
         {hotels?.map((hotel) => (
           <Card sx={{ minWidth: 300, mb: 2 }} key={hotel.id}>
             <CardMedia
